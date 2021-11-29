@@ -15,6 +15,7 @@
 #define XboxY Xbox.GetY(frc::XboxController::JoystickHand(0))
 
 void Robot::RobotInit() {
+  //Right.SetInverted(true);
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
@@ -67,21 +68,19 @@ void Robot::TeleopInit() {}
 void Robot::TeleopPeriodic() {
   double deadzone = 0.4;
   //myRobot.ArcadeDrive(Xbox.GetY(frc::XboxController::JoystickHand(0)), XboxX, true);
-  double bozo = 0.0;
-  double hello = 0.0;
+  double LeftSpeed = 0.0;
+  double RightSpeed = 0.0;
+  double got = XboxX;
+
+  RightSpeed, LeftSpeed = XboxY;
+  if(got > 0){
+    RightSpeed = RightSpeed - got;
+  }if(got < 0){
+    LeftSpeed = LeftSpeed + got;
+  }
+
   if (IsOperatorControl() && IsEnabled()) {
-    //myRobot.ArcadeDrive(XboxY, XboxX, true);
-    //deadzone
-    if(XboxX > deadzone || XboxX < -deadzone){
-      bozo = XboxX;
-    }
-    if(XboxY > deadzone || XboxY < -deadzone){
-      hello = XboxY;
-    }
-    myRobot.ArcadeDrive(hello, bozo, true);
-    if(Xbox.GetYButton()){
-      
-    }
+    myRobot.TankDrive(LeftSpeed, RightSpeed, true);
   }
 }
 
