@@ -11,8 +11,10 @@
 #include <frc/XboxController.h>
 
 //shortens xboxController.GetX and xboxController.GetY 
-#define XboxX Xbox.GetX(frc::XboxController::JoystickHand(0))
-#define XboxY Xbox.GetY(frc::XboxController::JoystickHand(0))
+#define XboxXL Xbox.GetX(frc::XboxController::JoystickHand(0))
+#define XboxYL Xbox.GetY(frc::XboxController::JoystickHand(0))
+#define XboxYR Xbox.GetY(frc::XboxController::JoystickHand(1))
+
 
 void Robot::RobotInit() {
   //Right.SetInverted(true);
@@ -67,21 +69,45 @@ void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
   double deadzone = 0.4;
-  //myRobot.ArcadeDrive(Xbox.GetY(frc::XboxController::JoystickHand(0)), XboxX, true);
-  double LeftSpeed = 0.0;
-  double RightSpeed = 0.0;
-  double got = XboxX;
+  double Xaxis = 0.0;
+  double Yaxis = 0.0;
+  double winchSpeed = -0.3;
+  double grain = sensor.Get();
+  frc::SmartDashboard::PutNumber("limit switch", grain);
 
-  RightSpeed, LeftSpeed = XboxY;
-  if(got > 0){
-    RightSpeed = RightSpeed - got;
-  }if(got < 0){
-    LeftSpeed = LeftSpeed + got;
-  }
+  //xboxyr
 
+  //drive code
   if (IsOperatorControl() && IsEnabled()) {
-    myRobot.TankDrive(LeftSpeed, RightSpeed, true);
+    //left Joystick
+    if (XboxXL > deadzone || XboxXL < -deadzone ) {
+      Xaxis = XboxXL;
+    } else if (XboxYL > deadzone || XboxYL < -deadzone) {
+      Yaxis = XboxYL; 
+    }
+    
+    //right Joystick
+    if(XboxYR > deadzone || XboxYR < -deadzone){
+      winchSpeed = XboxYR;
+      }
+    else{
+      winchSpeed = 0.0;
+    }
+    
+    
+
   }
+  //robot moving command
+  myRobot.CurvatureDrive(Yaxis, Xaxis, true);
+  //winch
+    m_winch.Set(winchSpeed);
+  //pneumatic
+  if(Xbox.GetAButton()){
+    Tshirt.Set(frc::DoubleSolenoid::Value(2));
+  }else {
+    Tshirt.Set(frc::DoubleSolenoid::Value(1));
+  }
+
 }
 
 void Robot::DisabledInit() {}
