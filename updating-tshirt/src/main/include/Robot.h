@@ -24,9 +24,12 @@ class Robot : public frc::TimedRobot {
  frc::VictorSP m_leftlead{3};
  frc::VictorSP m_rightfollow{0};
  frc::VictorSP m_leftfollow{1};
+ frc::Victor m_winch{9};
  
  frc::SpeedControllerGroup Right{m_rightlead, m_rightfollow};
  frc::SpeedControllerGroup Left{m_leftlead, m_leftfollow};
+
+ frc::DigitalInput sensor{0};
 
  frc::DoubleSolenoid Tshirt{0, 1};
 
